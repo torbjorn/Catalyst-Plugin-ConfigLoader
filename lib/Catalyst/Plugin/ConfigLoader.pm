@@ -9,7 +9,7 @@ use Module::Pluggable::Fast
     search  => [ __PACKAGE__ ],
     require => 1;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -19,7 +19,9 @@ Catalyst::Plugin::ConfigLoader - Load config files of various types
 
     package MyApp;
     
-    use Catalyst( qw( ConfigLoader ... ) );
+    # ConfigLoader should be first in your list so
+    # other plugins can get the config information
+    use Catalyst qw( ConfigLoader ... );
 	
     # by default myapp.* will be loaded
     # you can specify a file if you'd like
