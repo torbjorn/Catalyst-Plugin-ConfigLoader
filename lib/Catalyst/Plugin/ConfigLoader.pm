@@ -39,8 +39,8 @@ INI and Perl formats.
 =head2 setup( )
 
 This method is automatically called by Catalyst's setup routine. It will
-attempt to use each plugin and set the C<config()> section once a file has been
-successfully loaded.
+attempt to use each plugin and, once a file has been successfully
+loaded, set the C<config()> section.
 
 =cut
 
