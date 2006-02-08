@@ -10,7 +10,8 @@ my $build = Module::Build->new(
 	create_makefile_pl => 'traditional',
 	requires           => {
 		'Catalyst'    => 0,
-		'File::Slurp' => 0
+		#'File::Slurp' => 0,
+		'Data::Visitor' => 0.02,
 	},
 );
 

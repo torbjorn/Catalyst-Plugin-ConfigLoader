@@ -3,7 +3,7 @@ package Catalyst::Plugin::ConfigLoader::JSON;
 use strict;
 use warnings;
 
-use File::Slurp;
+#use File::Slurp;    
 
 =head1 NAME
 
