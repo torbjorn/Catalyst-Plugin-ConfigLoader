@@ -3,8 +3,6 @@ package Catalyst::Plugin::ConfigLoader::JSON;
 use strict;
 use warnings;
 
-#use File::Slurp;    
-
 =head1 NAME
 
 Catalyst::Plugin::ConfigLoader::JSON - Load JSON config files
@@ -42,7 +40,10 @@ sub load {
     my $class = shift;
     my $file  = shift;
 
-    my $content = read_file( $file );
+    my $content;
+    open(my $fh, $file) or die $!;
+    { local $/; $content = <$fh> }
+    close $fh;
 
     eval { require JSON::Syck; };
     if( $@ ) {

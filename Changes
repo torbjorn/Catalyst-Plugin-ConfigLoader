@@ -4,7 +4,7 @@ Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
     - add finalize_config method
     - make default finalize_config traverse the config and substitute
       things beginning __HOME__/* with real path
-    - don't (re-)use File::Slurp, not sure how to eliminate warnings
+    - don't use File::Slurp, produces annoying warnings on some systems
 
 0.03  Mon Jan 30 2006
     - pod fixes
