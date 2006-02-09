@@ -94,7 +94,7 @@ sub finalize_config {
     my $v = Data::Visitor::Callback->new(
         plain_value => sub { s[^__HOME__/(.+)$][ $c->path_to($1) ]e }
     );
-    $v->visit($c->config);
+    $v->visit( $c->config );
 }
 
 =head1 AUTHOR

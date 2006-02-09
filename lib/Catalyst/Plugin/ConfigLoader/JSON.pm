@@ -40,9 +40,8 @@ sub load {
     my $class = shift;
     my $file  = shift;
 
-    my $content;
-    open(my $fh, $file) or die $!;
-    { local $/; $content = <$fh> }
+    open( my $fh, $file ) or die $!;
+    my $content = do { local $/; $content = <$fh> };
     close $fh;
 
     eval { require JSON::Syck; };

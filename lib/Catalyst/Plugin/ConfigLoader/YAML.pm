@@ -44,9 +44,8 @@ sub load {
         return YAML::LoadFile( $file );
     }
     else {
-        my $content;
-        open(my $fh, $file) or die $!;
-        { local $/; $content = <$fh> }
+        open( my $fh, $file ) or die $!;
+        my $content = do { local $/; $content = <$fh> };
         close $fh;
         return YAML::Syck::Load( $content );
     }
