@@ -105,6 +105,17 @@ sub finalize_config {
 
 =back
 
+=head1 CONTRIBUTORS
+
+The following people have generously donated their time to the
+development of this module:
+
+=over 4
+
+=item * David Kamholz E<lt>dkamholz@cpan.orgE<gt>
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2006 by Brian Cassidy
