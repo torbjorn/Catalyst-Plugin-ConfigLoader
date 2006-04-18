@@ -10,7 +10,7 @@ use Module::Pluggable::Fast
     require => 1;
 use Data::Visitor::Callback;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -30,9 +30,13 @@ Catalyst::Plugin::ConfigLoader - Load config files of various types
 
 =head1 DESCRIPTION
 
-This mdoule will attempt to load find and load a configuration
+This module will attempt to load find and load a configuration
 file of various types. Currently it supports YAML, JSON, XML,
 INI and Perl formats.
+
+To support the distinction between development and production environments,
+this module will also attemp to load a local config (e.g. myapp_local.yaml)
+which will override any duplicate settings.
 
 =head1 METHODS
 
@@ -40,7 +44,7 @@ INI and Perl formats.
 
 This method is automatically called by Catalyst's setup routine. It will
 attempt to use each plugin and, once a file has been successfully
-loaded, set the C<config()> section.
+loaded, set the C<config()> section. 
 
 =cut
 
@@ -58,7 +62,7 @@ sub setup {
             push @files, $path;
         }
         else {
-            push @files, "$path.$_" for @extensions;
+            @files = map { ( "$path.$_", "${path}_local.$_" ) } @extensions;
         }
 
         for( @files ) {
@@ -84,8 +88,10 @@ at runtime. If you need to do this to properly configure any
 plugins, it's important to load ConfigLoader before them.
 ConfigLoader provides a default finalize_config method which
 walks through the loaded config hash and replaces any strings
-beginning with C<< __HOME__/<path> >> with the full path to
-the file inside the app's home directory.
+beginning containing C<__HOME__> with the full path to
+app's home directory (i.e. C<$c-E<gt>path_to('')> ).
+You can also use C<__path_to('foo/bar')__> which translates to
+C<$c-E<gt>path_to('foo', 'bar')> 
 
 =cut
 
