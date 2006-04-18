@@ -92,7 +92,11 @@ the file inside the app's home directory.
 sub finalize_config {
     my $c = shift;
     my $v = Data::Visitor::Callback->new(
-        plain_value => sub { s[^__HOME__/(.+)$][ $c->path_to($1) ]e if defined $_ }
+        plain_value => sub {
+            return unless defined $_;
+            s[__HOME__][ $c->path_to( '' ) ]e;
+            s[__path_to\((.+)\)__][ $c->path_to( split( '/', $1 ) ) ]e;
+        }
     );
     $v->visit( $c->config );
 }
