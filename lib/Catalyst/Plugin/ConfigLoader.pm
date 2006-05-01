@@ -23,7 +23,7 @@ Catalyst::Plugin::ConfigLoader - Load config files of various types
     # ConfigLoader should be first in your list so
     # other plugins can get the config information
     use Catalyst qw( ConfigLoader ... );
-	
+    
     # by default myapp.* will be loaded
     # you can specify a file if you'd like
     __PACKAGE__->config( file = > 'config.yaml' );    
@@ -116,7 +116,7 @@ sub _fix_syntax {
         }, qw( Component Model View Controller )
     );
 
-	foreach my $comp ( @components ) {
+    foreach my $comp ( @components ) {
         my $prefix = $comp->{ prefix };
         foreach my $element ( keys %{ $comp->{ values } } ) {
             $config->{ "$prefix$element" } = $comp->{ values }->{ $element };
