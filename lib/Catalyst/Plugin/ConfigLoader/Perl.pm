@@ -13,10 +13,10 @@ Loads Perl files. Example:
 
     {
         name => 'TestApp',
-        Controller::Foo => {
+        'Controller::Foo' => {
             foo => 'bar'
         },
-        Model::Baz => {
+        'Model::Baz' => {
             qux => 'xyzzy'
         }
     }
