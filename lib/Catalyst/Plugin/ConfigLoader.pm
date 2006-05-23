@@ -67,7 +67,7 @@ sub setup {
             next unless -f $_;
             my $config = $loader->load( $_ );
 
-            $c->debug( "Loaded Config $_" ) if $c->debug;
+            $c->log->debug( "Loaded Config $_" ) if $c->debug;
            _fix_syntax( $config );
             $c->config( $config ) if $config;
         }
