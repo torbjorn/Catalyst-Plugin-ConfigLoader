@@ -73,18 +73,6 @@ sub setup {
 
             _fix_syntax( $config );
             
-            # merge hashes 1 level down
-            for my $key ( keys %$config ) {
-                if( exists $c->config->{ $key } ) {
-                    my $isa_ref = ref $config->{ $key };
-
-                    next if !$isa_ref or $isa_ref ne 'HASH';
-
-                    my %temp = ( %{ $c->config->{ $key } }, %{ $config->{ $key } } );
-                    $config->{ $key } = \%temp;
-                }
-            }
-            
             $c->config( $config );
         }
     }
