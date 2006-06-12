@@ -10,7 +10,7 @@ use Module::Pluggable::Fast
     require => 1;
 use Data::Visitor::Callback;
 
-our $VERSION = '0.09';
+our $VERSION = '0.1';
 
 =head1 NAME
 
