@@ -160,7 +160,7 @@ sub _fix_syntax {
         grep {
             ref $config->{ lc $_ } || ref $config->{ $_ }
         }
-        qw( Component Model View Controller )
+        qw( Component Model M View V Controller C )
     );
 
     foreach my $comp ( @components ) {

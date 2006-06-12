@@ -1,8 +1,9 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
-0.09  Wed May 24 2006
+0.09  Mon Jun 12 2006
     - ignore non-ref model/view/controller/component keys
     - remove hash merging since it is now a core behavior
+    - added C/M/V legacy shortcuts
 
 0.08  Tue May 23 2006
     - added get_config_path() which extracts the path finding code
