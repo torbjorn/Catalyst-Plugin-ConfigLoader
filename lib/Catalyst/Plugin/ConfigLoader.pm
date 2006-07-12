@@ -7,7 +7,7 @@ use NEXT;
 use Module::Pluggable::Object ();
 use Data::Visitor::Callback;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =head1 NAME
 
@@ -94,7 +94,7 @@ ConfigLoader provides a default finalize_config method which
 walks through the loaded config hash and replaces any strings
 beginning containing C<__HOME__> with the full path to
 app's home directory (i.e. C<$c-E<gt>path_to('')> ).
-You can also use C<__path_to('foo/bar')__> which translates to
+You can also use C<__path_to(foo/bar)__> which translates to
 C<$c-E<gt>path_to('foo', 'bar')> 
 
 =cut
