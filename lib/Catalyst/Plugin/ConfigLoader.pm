@@ -2,12 +2,10 @@ package Catalyst::Plugin::ConfigLoader;
 
 use strict;
 use warnings;
-
+use Config::Any;
 use NEXT;
-use Module::Pluggable::Object ();
 use Data::Visitor::Callback;
-
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 =head1 NAME
 
@@ -47,69 +45,43 @@ loaded, set the C<config()> section.
 
 sub setup {
     my $c = shift;
-    my( $path, $extension ) = $c->get_config_path;
-    my $suffix = $c->get_config_local_suffix;
-
-    my $finder = Module::Pluggable::Object->new(
-        search_path => [ __PACKAGE__ ],
-        require     => 1
-    );
-
-    for my $loader ( $finder->plugins ) {
-        my @files;
-        my @extensions = $loader->extensions;
-        if( $extension ) {
-            next unless grep { $_ eq $extension } @extensions;
-            push @files, $path;
-        }
-        else {
-            @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
-        }
-
-        for( @files ) {
-            next unless -f $_;
-            my $config = $loader->load( $_ );
-
-            $c->log->debug( qq(Loaded Config "$_") ) if $c->debug;
-            
-            next if !$config;
-
-            _fix_syntax( $config );
-            
-            $c->config( $config );
-        }
+ 
+    my @files = $c->find_files;
+    my $cfg = Config::Any->load_stems({stems => \@files, filter => \&_fix_syntax});
+    
+    for my $ref (@$cfg) {
+        my ($file, $config) = each %$ref;
+        $c->config($config);
+        $c->log->debug( qq(Loaded Config "$file") )
+            if $c->debug;
     }
 
     $c->finalize_config;
-
     $c->NEXT::setup( @_ );
 }
 
-=head2 finalize_config
+=head2 find_files
 
-This method is called after the config file is loaded. It can be
-used to implement tuning of config values that can only be done
-at runtime. If you need to do this to properly configure any
-plugins, it's important to load ConfigLoader before them.
-ConfigLoader provides a default finalize_config method which
-walks through the loaded config hash and replaces any strings
-beginning containing C<__HOME__> with the full path to
-app's home directory (i.e. C<$c-E<gt>path_to('')> ).
-You can also use C<__path_to(foo/bar)__> which translates to
-C<$c-E<gt>path_to('foo', 'bar')> 
+This method determines the potential file paths to be used for config loading.
+It returns an array of paths (up to the filename less the extension) to pass to
+L<Config::Any|Config::Any> for loading.
 
 =cut
 
-sub finalize_config {
+sub find_files {
     my $c = shift;
-    my $v = Data::Visitor::Callback->new(
-        plain_value => sub {
-            return unless defined $_;
-            s{__HOME__}{ $c->path_to( '' ) }e;
-            s{__path_to\((.+)\)__}{ $c->path_to( split( '/', $1 ) ) }e;
-        }
-    );
-    $v->visit( $c->config );
+    my ($path, $extension) = $c->get_config_path;
+    my $suffix = $c->get_config_local_suffix;
+    my @extensions = @{ Config::Any->extensions };
+    
+    my @files;
+    if ($extension) {
+        next unless grep { $_ eq $extension } @extensions;
+        push @files, $path;
+    } else {
+        @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
+    }
+    @files;
 }
 
 =head2 get_config_path
@@ -203,40 +175,31 @@ sub _fix_syntax {
     }
 }
 
-=head1 AUTHOR
+=head2 finalize_config
 
-=over 4 
-
-=item * Brian Cassidy E<lt>bricas@cpan.orgE<gt>
-
-=back
-
-=head1 CONTRIBUTORS
-
-The following people have generously donated their time to the
-development of this module:
-
-=over 4
-
-=item * David Kamholz E<lt>dkamholz@cpan.orgE<gt>
-
-=back
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 2006 by Brian Cassidy
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
-
-=head1 SEE ALSO
-
-=over 4 
-
-=item * L<Catalyst>
-
-=back
+This method is called after the config file is loaded. It can be
+used to implement tuning of config values that can only be done
+at runtime. If you need to do this to properly configure any
+plugins, it's important to load ConfigLoader before them.
+ConfigLoader provides a default finalize_config method which
+walks through the loaded config hash and replaces any strings
+beginning containing C<__HOME__> with the full path to
+app's home directory (i.e. C<$c-E<gt>path_to('')> ).
+You can also use C<__path_to(foo/bar)__> which translates to
+C<$c-E<gt>path_to('foo', 'bar')> 
 
 =cut
+
+sub finalize_config {
+    my $c = shift;
+    my $v = Data::Visitor::Callback->new(
+        plain_value => sub {
+            return unless defined $_;
+            s{__HOME__}{ $c->path_to( '' ) }e;
+            s{__path_to\((.+)\)__}{ $c->path_to( split( '/', $1 ) ) }e;
+        }
+    );
+    $v->visit( $c->config );
+}
 
 1;

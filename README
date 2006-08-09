@@ -1,0 +1,5 @@
+Catalyst::Plugin::ConfigLoader - Load class configuration from configuration files
+
+This module was originally written by Brian Cassidy - <bricas@cpan.org>.
+Portions have been refactored into Config::Any and this module has been rewritten to use
+that module, by Joel Bernstein - <rataxis@cpan.org> under the sponsorship of Portugal Telecom.
