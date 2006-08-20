@@ -4,14 +4,14 @@ use Module::Build;
 
 my $build = Module::Build->new(
 	module_name        => 'Catalyst::Plugin::ConfigLoader',
-	dist_author        => 'Joel Bernstein <rataxis@cpan.org>',
+	dist_author        => 'Brian Cassidy <bricas@cpan.org>',
 	license            => 'perl',
 	create_readme      => 1,
 	create_makefile_pl => 'traditional',
 	requires           => {
 		'Catalyst::Runtime' => '0',
 		'Data::Visitor'     => '0.02',
-		'Config::Any'		=> '0.04'
+        'Module::Pluggable' => '3.01'
 	},
 );
 
