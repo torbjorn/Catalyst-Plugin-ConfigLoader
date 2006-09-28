@@ -7,7 +7,7 @@ use Config::Any;
 use NEXT;
 use Data::Visitor::Callback;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 =head1 NAME
 
@@ -276,6 +276,8 @@ it under the same terms as Perl itself.
 =over 4 
 
 =item * L<Catalyst>
+
+=item * L<Catalyst::Plugin::ConfigLoader::Manual>
 
 =item * L<Config::Any>
 
