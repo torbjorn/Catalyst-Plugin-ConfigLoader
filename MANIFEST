@@ -1,6 +1,7 @@
 Build.PL
 Changes
 lib/Catalyst/Plugin/ConfigLoader.pm
+lib/Catalyst/Plugin/ConfigLoader/Manual.pod
 MANIFEST
 t/01-use.t
 t/10-live_auto.t
