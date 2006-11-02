@@ -8,6 +8,18 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
     
     use Catalyst qw( ConfigLoader ... );
 
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item * C<MYAPP_CONFIG> - specific config file to load for "MyApp"
+
+=item * C<CATALYST_CONFIG_LOCAL_SUFFIX> - global suffix for extra config files
+
+=item * C<MYAPP_CONFIG_LOCAL_SUFFIX> - suffix specifically for "MyApp"
+
+=back
+
 =head1 CONFIG FORMATS
 
 =head2 Config::General
