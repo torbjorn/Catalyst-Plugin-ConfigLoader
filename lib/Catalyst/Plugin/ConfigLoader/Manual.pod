@@ -24,6 +24,18 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
 
 =head2 Config::General
 
+=head3 Extensions
+
+=over 4
+
+=item * cnf
+
+=item * conf
+
+=back
+
+=head3 Example Config
+
     name = TestApp
     <Component Controller::Foo>
         foo bar
@@ -34,6 +46,16 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
 
 =head2 INI
 
+=head3 Extensions
+
+=over 4
+
+=item * ini
+
+=back
+
+=head3 Example Config
+
     name=TestApp
     
     [Controller::Foo]
@@ -43,6 +65,18 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
     qux=xyzzy
 
 =head2 JSON
+
+=head3 Extensions
+
+=over 4
+
+=item * jsn
+
+=item * json
+
+=back
+
+=head3 Example Config
 
     {
         "name": "TestApp",
@@ -56,6 +90,18 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
 
 =head2 Perl
 
+=head3 Extensions
+
+=over 4
+
+=item * pl
+
+=item * perl
+
+=back
+
+=head3 Example Config
+
     {
         name => 'TestApp',
         'Controller::Foo' => {
@@ -68,6 +114,16 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
 
 =head2 XML
 
+=head3 Extensions
+
+=over 4
+
+=item * xml
+
+=back
+
+=head3 Example Config
+
     <config>
         <name>TestApp</name>
         <component name="Controller::Foo">
@@ -79,6 +135,18 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
     </config>
 
 =head2 YAML
+
+=head3 Extensions
+
+=over 4
+
+=item * yml
+
+=item * yaml
+
+=back
+
+=head3 Example Config
 
     ---
     name: TestApp
