@@ -155,4 +155,17 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
     Model::Baz:
         qux: xyzzy
 
+=head1 COOKBOOK
+
+=head2 Configuring a Catalyst::Model::DBIC::Schema model from a YAML config
+
+    Model::MyModel:
+      schema_class: MyApp::MySchema
+        connect_info:
+        - dbi:SQLite:myapp.db
+        - ''
+        - ''
+        - AutoCommit: 1 
+
 =cut
+
