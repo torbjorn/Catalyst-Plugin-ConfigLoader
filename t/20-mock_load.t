@@ -9,6 +9,8 @@ use_ok( 'Catalyst', qw( ConfigLoader ) );
 
 __PACKAGE__->setup;
 
+use Data::Dumper; print Dumper __PACKAGE__->config;
+
 ok( __PACKAGE__->config );
 is( __PACKAGE__->config->{ 'Controller::Foo' }->{ foo }, 'bar' );
 is( __PACKAGE__->config->{ 'Controller::Foo' }->{ new }, 'key' );
