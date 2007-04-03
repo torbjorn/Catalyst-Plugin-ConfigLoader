@@ -237,11 +237,7 @@ sub finalize_config {
 
 =head1 AUTHOR
 
-=over 4
-
-=item * Brian Cassidy E<lt>bricas@cpan.orgE<gt>
-
-=back
+Brian Cassidy E<lt>bricas@cpan.orgE<gt>
 
 =head1 CONTRIBUTORS
 
