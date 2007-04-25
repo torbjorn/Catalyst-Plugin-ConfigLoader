@@ -1,4 +1,4 @@
-use inc::Module::Install;
+use inc::Module::Install 0.65;
 
 name 'Catalyst-Plugin-ConfigLoader';
 all_from 'lib/Catalyst/Plugin/ConfigLoader.pm';
