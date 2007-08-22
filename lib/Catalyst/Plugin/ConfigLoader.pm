@@ -133,7 +133,7 @@ The order of preference is specified as:
 
 =item * C<$ENV{ CATALYST_CONFIG }>
 
-=item * C<$c-E<gt>config-E<gt>{ file }>
+=item * C<$c-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E>gt>{ file }>
 
 =item * C<$c-E<gt>path_to( $application_prefix )>
 
@@ -142,6 +142,9 @@ The order of preference is specified as:
 If either of the first two user-specified options are directories, the
 application prefix will be added on to the end of the path.
 
+DEPRECATION NOTICE: C<$c-E<gt>config-E<gt>{ file }> is deprecated
+and will be removed in the next release.
+
 =cut
 
 sub get_config_path {
@@ -149,7 +152,8 @@ sub get_config_path {
     my $appname = ref $c || $c;
     my $prefix  = Catalyst::Utils::appprefix( $appname );
     my $path    = Catalyst::Utils::env_value( $c, 'CONFIG' )
-        || $c->config->{ file }
+        || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
+        || $c->config->{ file } # to be removed next release
         || $c->path_to( $prefix );
 
     my( $extension ) = ( $path =~ m{\.(.{1,4})$} );
@@ -173,9 +177,12 @@ this value is C<local>, but it can be specified in the following order of prefer
 
 =item * C<$ENV{ CATALYST_CONFIG_LOCAL_SUFFIX }>
 
-=item * C<$c-E<gt>config-E<gt>{ config_local_suffix }>
+=item * C<$c-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E<gt>{ config_local_suffix }>
 
 =back
+
+DEPRECATION NOTICE: C<$c-E<gt>config-E<gt>{ config_local_suffix }> is deprecated
+and will be removed in the next release.
 
 =cut
 
@@ -183,7 +190,8 @@ sub get_config_local_suffix {
     my $c       = shift;
     my $appname = ref $c || $c;
     my $suffix  = Catalyst::Utils::env_value( $c, 'CONFIG_LOCAL_SUFFIX' )
-        || $c->config->{ config_local_suffix }
+        || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
+        || $c->config->{ config_local_suffix } # to be remove in the next release
         || 'local';
 
     return $suffix;
@@ -251,9 +259,10 @@ C<__DATA__> as a config value, for example)
 
 The parameter list is split on comma (C<,>). You can override this method to
 do your own string munging, or you can define your own macros in
-C<MyApp->config->{ substitutions }>. Example:
+C<MyApp-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E<gt>{ substitutions }>.
+Example:
 
-    MyApp->config->{ substitutions } = {
+    MyApp->config->{ 'Plugin::ConfigLoader' }->{ substitutions } = {
         baz => sub { my $c = shift; qux( @_ ); }
     }
 
@@ -263,7 +272,7 @@ The above will respond to C<__baz(x,y)__> in config strings.
 
 sub config_substitutions {
     my $c = shift;
-    my $subs = $c->config->{ substitutions } || {};
+    my $subs = $c->config->{ 'Plugin::ConfigLoader' }->{ substitutions } || {};
     $subs->{ HOME } ||= sub { shift->path_to( '' ); };
     $subs->{ path_to } ||= sub { shift->path_to( @_ ); };
     $subs->{ literal } ||= sub { return $_[ 1 ]; };

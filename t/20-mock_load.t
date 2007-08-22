@@ -7,7 +7,7 @@ $ENV{ CATALYST_HOME } = cwd . '/t/mockapp';
 
 use_ok( 'Catalyst', qw( ConfigLoader ) );
 
-__PACKAGE__->config->{ substitutions } = {
+__PACKAGE__->config->{ 'Plugin::ConfigLoader' }->{ substitutions } = {
     foo => sub { shift; join('-', @_); }
 };
 
