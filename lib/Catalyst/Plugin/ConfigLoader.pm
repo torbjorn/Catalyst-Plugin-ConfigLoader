@@ -24,13 +24,14 @@ Catalyst::Plugin::ConfigLoader - Load config files of various types
     
     # by default myapp.* will be loaded
     # you can specify a file if you'd like
-    __PACKAGE__->config( file => 'config.yaml' );    
+    __PACKAGE__->config( 'Plugin::ConfigLoader' => { file => 'config.yaml' } );    
 
 =head1 DESCRIPTION
 
 This module will attempt to load find and load a configuration
 file of various types. Currently it supports YAML, JSON, XML,
-INI and Perl formats.
+INI and Perl formats. Special configuration for a particular driver format can
+be stored in C<MyApp-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E<gt>{ driver }>.
 
 To support the distinction between development and production environments,
 this module will also attemp to load a local config (e.g. myapp_local.yaml)
@@ -50,9 +51,10 @@ sub setup {
     my $c     = shift;
     my @files = $c->find_files;
     my $cfg   = Config::Any->load_files( {
-        files   => \@files, 
-        filter  => \&_fix_syntax,
-        use_ext => 1
+        files       => \@files, 
+        filter      => \&_fix_syntax,
+        use_ext     => 1,
+        driver_args => $c->config->{'Plugin::ConfigLoader'}->{driver} || {},
     } );
 
     # split the responses into normal and local cfg

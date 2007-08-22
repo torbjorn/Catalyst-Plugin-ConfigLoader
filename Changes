@@ -5,6 +5,8 @@ Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
       (Jason Kohles)
     - allow users to specify their own macros in
       MyApp->config->{ substitutions } (Johnathan Rockway)
+    - pass special constructor arguments to Config::Any. Requires Config::Any
+      0.08 (Gareth Kirwan)
 
     [DEPRECATION NOTICE]
     - the "file" and "config_local_suffix" config keys are now to be explicitly
