@@ -6,8 +6,9 @@ use warnings;
 use Config::Any;
 use NEXT;
 use Data::Visitor::Callback;
+use Catalyst::Utils ();
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 =head1 NAME
 
@@ -130,6 +131,8 @@ The order of preference is specified as:
 
 =item * C<$ENV{ MYAPP_CONFIG }>
 
+=item * C<$ENV{ CATALYST_CONFIG }>
+
 =item * C<$c-E<gt>config-E<gt>{ file }>
 
 =item * C<$c-E<gt>path_to( $application_prefix )>
@@ -145,7 +148,7 @@ sub get_config_path {
     my $c       = shift;
     my $appname = ref $c || $c;
     my $prefix  = Catalyst::Utils::appprefix( $appname );
-    my $path    = $ENV{ Catalyst::Utils::class2env( $appname ) . '_CONFIG' }
+    my $path    = Catalyst::Utils::env_value( $c, 'CONFIG' )
         || $c->config->{ file }
         || $c->path_to( $prefix );
 
@@ -166,9 +169,9 @@ this value is C<local>, but it can be specified in the following order of prefer
 
 =over 4
 
-=item * C<$ENV{ CATALYST_CONFIG_LOCAL_SUFFIX }>
-
 =item * C<$ENV{ MYAPP_CONFIG_LOCAL_SUFFIX }>
+
+=item * C<$ENV{ CATALYST_CONFIG_LOCAL_SUFFIX }>
 
 =item * C<$c-E<gt>config-E<gt>{ config_local_suffix }>
 
@@ -179,8 +182,7 @@ this value is C<local>, but it can be specified in the following order of prefer
 sub get_config_local_suffix {
     my $c       = shift;
     my $appname = ref $c || $c;
-    my $suffix  = $ENV{ CATALYST_CONFIG_LOCAL_SUFFIX }
-        || $ENV{ Catalyst::Utils::class2env( $appname ) . '_CONFIG_LOCAL_SUFFIX' }
+    my $suffix  = Catalyst::Utils::env_value( $c, 'CONFIG_LOCAL_SUFFIX' )
         || $c->config->{ config_local_suffix }
         || 'local';
 
