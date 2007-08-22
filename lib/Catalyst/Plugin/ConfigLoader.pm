@@ -149,6 +149,12 @@ and will be removed in the next release.
 
 sub get_config_path {
     my $c       = shift;
+
+    # deprecation notice
+    if( exists $c->config->{ file } ) {
+        $c->log->warn( q("file" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ file }") );
+    }
+
     my $appname = ref $c || $c;
     my $prefix  = Catalyst::Utils::appprefix( $appname );
     my $path    = Catalyst::Utils::env_value( $c, 'CONFIG' )
@@ -188,6 +194,12 @@ and will be removed in the next release.
 
 sub get_config_local_suffix {
     my $c       = shift;
+
+    # deprecation notice
+    if( exists $c->config->{ config_local_suffix } ) {
+        $c->log->warn( q("config_local_suffix" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }") );
+    }
+
     my $appname = ref $c || $c;
     my $suffix  = Catalyst::Utils::env_value( $c, 'CONFIG_LOCAL_SUFFIX' )
         || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
