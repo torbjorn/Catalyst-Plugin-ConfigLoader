@@ -9,8 +9,8 @@ Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 0.16  Thu Aug 23 2007
     - separated out the macro expansion code into config_substitutions()
       (Jason Kohles)
-    - allow users to specify their own macros in
-      MyApp->config->{ substitutions } (Johnathan Rockway)
+    - allow users to specify their own macros in the "substitutions"
+      config (Johnathan Rockway)
     - pass special constructor arguments to Config::Any. Requires Config::Any
       0.08 (Gareth Kirwan)
 
