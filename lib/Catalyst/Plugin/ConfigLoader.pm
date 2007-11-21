@@ -90,7 +90,7 @@ sub load_config {
     my $c   = shift;
     my $ref = shift;
 
-    my ( $file, $config ) = each %$ref;
+    my ( $file, $config ) = %$ref;
 
     $c->config( $config );
     $c->log->debug( qq(Loaded Config "$file") )
