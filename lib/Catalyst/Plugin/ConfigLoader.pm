@@ -8,7 +8,7 @@ use NEXT;
 use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 =head1 NAME
 
@@ -113,7 +113,8 @@ sub find_files {
     my @files;
     if ($extension) {
         next unless grep { $_ eq $extension } @extensions;
-        push @files, $path, "${path}_${suffix}";
+        ( my $local = $path ) =~ s{\.$extension}{_$suffix.$extension};
+        push @files, $path, $local;
     } else {
         @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
     }
@@ -170,7 +171,7 @@ sub get_config_path {
         $path  =~ s{[\/\\]$}{};
         $path .= "/$prefix";
     }
-    
+
     return( $path, $extension );
 }
 
