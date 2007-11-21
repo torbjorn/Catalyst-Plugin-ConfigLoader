@@ -140,7 +140,7 @@ The order of preference is specified as:
 
 =item * C<$ENV{ CATALYST_CONFIG }>
 
-=item * C<$c-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E>gt>{ file }>
+=item * C<$c-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E<gt>{ file }>
 
 =item * C<$c-E<gt>path_to( $application_prefix )>
 
