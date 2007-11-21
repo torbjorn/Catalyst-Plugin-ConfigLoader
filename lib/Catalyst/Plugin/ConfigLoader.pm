@@ -161,8 +161,8 @@ sub get_config_path {
     if ( exists $c->config->{ file } ) {
         $c->log->warn(
             q(*** "file" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ file }")
-            sleep( 3 );
         );
+        sleep( 3 );
     }
 
     my $appname = ref $c || $c;
@@ -208,9 +208,9 @@ sub get_config_local_suffix {
     # deprecation notice
     if ( exists $c->config->{ config_local_suffix } ) {
         $c->log->warn(
-            q("*** config_local_suffix" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }")
-            sleep( 3 );
+            q(*** "config_local_suffix" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }")
         );
+        sleep( 3 );
     }
 
     my $appname = ref $c || $c;
