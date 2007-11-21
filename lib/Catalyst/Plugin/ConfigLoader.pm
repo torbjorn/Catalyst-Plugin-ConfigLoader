@@ -50,24 +50,27 @@ loaded, set the C<config()> section.
 sub setup {
     my $c     = shift;
     my @files = $c->find_files;
-    my $cfg   = Config::Any->load_files( {
-        files       => \@files, 
-        filter      => \&_fix_syntax,
-        use_ext     => 1,
-        driver_args => $c->config->{'Plugin::ConfigLoader'}->{driver} || {},
-    } );
+    my $cfg   = Config::Any->load_files(
+        {   files       => \@files,
+            filter      => \&_fix_syntax,
+            use_ext     => 1,
+            driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
+                || {},
+        }
+    );
 
     # split the responses into normal and local cfg
     my $local_suffix = $c->get_config_local_suffix;
-    my( @cfg, @localcfg );
-    for( @$cfg ) {
-        if( ( keys %$_ )[ 0 ] =~ m{ $local_suffix \. }xms ) {
+    my ( @cfg, @localcfg );
+    for ( @$cfg ) {
+        if ( ( keys %$_ )[ 0 ] =~ m{ $local_suffix \. }xms ) {
             push @localcfg, $_;
-        } else {
+        }
+        else {
             push @cfg, $_;
         }
     }
-    
+
     # load all the normal cfgs, then the local cfgs last so they can override
     # normal cfgs
     $c->load_config( $_ ) for @cfg, @localcfg;
@@ -86,9 +89,9 @@ context object. It does not return a value.
 sub load_config {
     my $c   = shift;
     my $ref = shift;
-    
-    my( $file, $config ) = each %$ref;
-    
+
+    my ( $file, $config ) = each %$ref;
+
     $c->config( $config );
     $c->log->debug( qq(Loaded Config "$file") )
         if $c->debug;
@@ -106,16 +109,17 @@ L<Config::Any|Config::Any> for loading.
 
 sub find_files {
     my $c = shift;
-    my( $path, $extension ) = $c->get_config_path;
+    my ( $path, $extension ) = $c->get_config_path;
     my $suffix     = $c->get_config_local_suffix;
     my @extensions = @{ Config::Any->extensions };
-    
+
     my @files;
-    if ($extension) {
+    if ( $extension ) {
         next unless grep { $_ eq $extension } @extensions;
         ( my $local = $path ) =~ s{\.$extension}{_$suffix.$extension};
         push @files, $path, $local;
-    } else {
+    }
+    else {
         @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
     }
 
@@ -151,28 +155,30 @@ and will be removed in the next release.
 =cut
 
 sub get_config_path {
-    my $c       = shift;
+    my $c = shift;
 
     # deprecation notice
-    if( exists $c->config->{ file } ) {
-        $c->log->warn( q("file" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ file }") );
+    if ( exists $c->config->{ file } ) {
+        $c->log->warn(
+            q("file" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ file }")
+        );
     }
 
     my $appname = ref $c || $c;
     my $prefix  = Catalyst::Utils::appprefix( $appname );
     my $path    = Catalyst::Utils::env_value( $c, 'CONFIG' )
         || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
-        || $c->config->{ file } # to be removed next release
+        || $c->config->{ file }    # to be removed next release
         || $c->path_to( $prefix );
 
-    my( $extension ) = ( $path =~ m{\.(.{1,4})$} );
-    
-    if( -d $path ) {
-        $path  =~ s{[\/\\]$}{};
+    my ( $extension ) = ( $path =~ m{\.(.{1,4})$} );
+
+    if ( -d $path ) {
+        $path =~ s{[\/\\]$}{};
         $path .= "/$prefix";
     }
 
-    return( $path, $extension );
+    return ( $path, $extension );
 }
 
 =head2 get_config_local_suffix
@@ -196,17 +202,20 @@ and will be removed in the next release.
 =cut
 
 sub get_config_local_suffix {
-    my $c       = shift;
+    my $c = shift;
 
     # deprecation notice
-    if( exists $c->config->{ config_local_suffix } ) {
-        $c->log->warn( q("config_local_suffix" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }") );
+    if ( exists $c->config->{ config_local_suffix } ) {
+        $c->log->warn(
+            q("config_local_suffix" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }")
+        );
     }
 
     my $appname = ref $c || $c;
-    my $suffix  = Catalyst::Utils::env_value( $c, 'CONFIG_LOCAL_SUFFIX' )
+    my $suffix = Catalyst::Utils::env_value( $c, 'CONFIG_LOCAL_SUFFIX' )
         || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
-        || $c->config->{ config_local_suffix } # to be remove in the next release
+        || $c->config
+        ->{ config_local_suffix }    # to be remove in the next release
         || 'local';
 
     return $suffix;
@@ -219,10 +228,8 @@ sub _fix_syntax {
             prefix => $_ eq 'Component' ? '' : $_ . '::',
             values => delete $config->{ lc $_ } || delete $config->{ $_ }
         },
-        grep {
-            ref $config->{ lc $_ } || ref $config->{ $_ }
-        }
-        qw( Component Model M View V Controller C )
+        grep { ref $config->{ lc $_ } || ref $config->{ $_ } }
+            qw( Component Model M View V Controller C )
     );
 
     foreach my $comp ( @components ) {
@@ -286,9 +293,10 @@ The above will respond to C<__baz(x,y)__> in config strings.
 =cut
 
 sub config_substitutions {
-    my $c = shift;
-    my $subs = $c->config->{ 'Plugin::ConfigLoader' }->{ substitutions } || {};
-    $subs->{ HOME } ||= sub { shift->path_to( '' ); };
+    my $c    = shift;
+    my $subs = $c->config->{ 'Plugin::ConfigLoader' }->{ substitutions }
+        || {};
+    $subs->{ HOME }    ||= sub { shift->path_to( '' ); };
     $subs->{ path_to } ||= sub { shift->path_to( @_ ); };
     $subs->{ literal } ||= sub { return $_[ 1 ]; };
     my $subsre = join( '|', keys %$subs );
@@ -297,7 +305,6 @@ sub config_substitutions {
         s{__($subsre)(?:\((.+?)\))?__}{ $subs->{ $1 }->( $c, $2 ? split( /,/, $2 ) : () ) }eg;
     }
 }
-
 
 =head1 AUTHOR
 
