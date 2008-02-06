@@ -8,7 +8,7 @@ use NEXT;
 use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 =head1 NAME
 
@@ -59,21 +59,24 @@ sub setup {
         }
     );
 
+    # map the array of hashrefs to a simple hash
+    my %configs = map { %$_ } @$cfg;
+
     # split the responses into normal and local cfg
     my $local_suffix = $c->get_config_local_suffix;
-    my ( @cfg, @localcfg );
-    for ( @$cfg ) {
-        if ( ( keys %$_ )[ 0 ] =~ m{ $local_suffix \. }xms ) {
-            push @localcfg, $_;
+    my ( @main, @locals );
+    for ( sort keys %configs ) {
+        if ( m{$local_suffix\.}ms ) {
+            push @locals, $_;
         }
         else {
-            push @cfg, $_;
+            push @main, $_;
         }
     }
 
     # load all the normal cfgs, then the local cfgs last so they can override
     # normal cfgs
-    $c->load_config( $_ ) for @cfg, @localcfg;
+    $c->load_config( { $_ => $configs{ $_ } } ) for @main, @locals;
 
     $c->finalize_config;
     $c->NEXT::setup( @_ );
@@ -335,7 +338,7 @@ Work to this module has been generously sponsored by:
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007 by Brian Cassidy
+Copyright 2008 by Brian Cassidy
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
