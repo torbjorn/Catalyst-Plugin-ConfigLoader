@@ -1,5 +1,6 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+    - Updated pod with new example
 0.20  Wed Feb 06 2008
     - sort configs by filename for loading (RT #31498)
 

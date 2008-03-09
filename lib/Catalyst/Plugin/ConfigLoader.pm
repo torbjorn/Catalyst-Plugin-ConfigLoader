@@ -26,6 +26,15 @@ Catalyst::Plugin::ConfigLoader - Load config files of various types
     # you can specify a file if you'd like
     __PACKAGE__->config( 'Plugin::ConfigLoader' => { file => 'config.yaml' } );    
 
+  In the file, assuming it's in YAML format:
+
+    foo: bar
+
+  Accessible through the context object, or the class itself
+
+   $c->config->{foo}    # bar
+   MyApp->config->{foo} # bar
+
 =head1 DESCRIPTION
 
 This module will attempt to load find and load a configuration
@@ -58,7 +67,6 @@ sub setup {
                 || {},
         }
     );
-
     # map the array of hashrefs to a simple hash
     my %configs = map { %$_ } @$cfg;
 
@@ -125,7 +133,6 @@ sub find_files {
     else {
         @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
     }
-
     @files;
 }
 
