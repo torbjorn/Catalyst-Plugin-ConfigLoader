@@ -160,27 +160,16 @@ The order of preference is specified as:
 If either of the first two user-specified options are directories, the
 application prefix will be added on to the end of the path.
 
-DEPRECATION NOTICE: C<$c-E<gt>config-E<gt>{ file }> is deprecated
-and will be removed in the next release.
-
 =cut
 
 sub get_config_path {
     my $c = shift;
 
-    # deprecation notice
-    if ( exists $c->config->{ file } ) {
-        $c->log->warn(
-            q(*** "file" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ file }")
-        );
-        sleep( 3 );
-    }
 
     my $appname = ref $c || $c;
     my $prefix  = Catalyst::Utils::appprefix( $appname );
     my $path    = Catalyst::Utils::env_value( $c, 'CONFIG' )
         || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
-        || $c->config->{ file }    # to be removed next release
         || $c->path_to( $prefix );
 
     my ( $extension ) = ( $path =~ m{\.(.{1,4})$} );
@@ -208,27 +197,14 @@ this value is C<local>, but it can be specified in the following order of prefer
 
 =back
 
-DEPRECATION NOTICE: C<$c-E<gt>config-E<gt>{ config_local_suffix }> is deprecated
-and will be removed in the next release.
-
 =cut
 
 sub get_config_local_suffix {
     my $c = shift;
 
-    # deprecation notice
-    if ( exists $c->config->{ config_local_suffix } ) {
-        $c->log->warn(
-            q(*** "config_local_suffix" config parameter has been deprecated in favor of "$c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }")
-        );
-        sleep( 3 );
-    }
-
     my $appname = ref $c || $c;
     my $suffix = Catalyst::Utils::env_value( $c, 'CONFIG_LOCAL_SUFFIX' )
         || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
-        || $c->config
-        ->{ config_local_suffix }    # to be remove in the next release
         || 'local';
 
     return $suffix;
