@@ -126,7 +126,8 @@ sub find_files {
 
     my @files;
     if ( $extension ) {
-        next unless grep { $_ eq $extension } @extensions;
+        die "Unable to handle files with the extension '${extension}'"
+            unless grep { $_ eq $extension } @extensions;
         ( my $local = $path ) =~ s{\.$extension}{_$suffix.$extension};
         push @files, $path, $local;
     }
