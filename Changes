@@ -1,6 +1,8 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
 0.21  XXXX
+    - add a cookbook entry for converting an existing config to
+      Config::General format
     - fix up pod to explain in more detail how to pass options to each
       driver class (Sergio Salvi)
 
