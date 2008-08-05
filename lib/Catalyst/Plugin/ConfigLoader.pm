@@ -227,7 +227,7 @@ sub _fix_syntax {
             values => delete $config->{ lc $_ } || delete $config->{ $_ }
         },
         grep { ref $config->{ lc $_ } || ref $config->{ $_ } }
-            qw( Component Model M View V Controller C )
+            qw( Component Model M View V Controller C Plugin )
     );
 
     foreach my $comp ( @components ) {
