@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+0.22  XXX
+    - add a cookbook entry re: UTF-8 and Config::General (Octavian Rasnita)
+
 0.21  Mon Aug 11 2008
     - add a cookbook entry for converting an existing config to
       Config::General format
