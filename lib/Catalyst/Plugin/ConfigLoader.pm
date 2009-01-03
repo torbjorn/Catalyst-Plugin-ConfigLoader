@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Config::Any;
-use NEXT;
+use MRO::Compat;
 use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
@@ -96,7 +96,7 @@ sub setup {
     $c->load_config( { $_ => $configs{ $_ } } ) for @main, @locals;
 
     $c->finalize_config;
-    $c->NEXT::setup( @_ );
+    $c->next::method( @_ );
 }
 
 =head2 load_config
