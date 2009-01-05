@@ -3,6 +3,8 @@ package TestApp;
 use strict;
 use warnings;
 
+use MRO::Compat;
+
 use Catalyst qw/ConfigLoader/;
 
 our $VERSION = '0.01';
