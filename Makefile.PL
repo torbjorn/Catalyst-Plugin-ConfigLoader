@@ -16,5 +16,4 @@ requires 'MRO::Compat'       => '0.09';
 
 test_requires 'Test::More';
 
-auto_install;
 WriteAll;
