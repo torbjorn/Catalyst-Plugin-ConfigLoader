@@ -1,9 +1,10 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+0.24  XXX
     - Fix so that having CATALYST_CONFIG_LOCAL_SUFFIX set in $ENV{} doesn't
       cause the tests to break.
 
-0.23 Sat Apr 18 2009
+0.23  Sat Apr 18 2009
     - Update Data::Visitor
 
 0.22  Mon Jan 05 2009
