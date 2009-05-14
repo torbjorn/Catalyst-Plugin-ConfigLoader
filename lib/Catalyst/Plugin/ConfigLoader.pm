@@ -53,7 +53,9 @@ See L<Config::Any>'s C<driver_args> parameter for more information.
 
 To support the distinction between development and production environments,
 this module will also attemp to load a local config (e.g. myapp_local.yaml)
-which will override any duplicate settings.
+which will override any duplicate settings.  See
+L<get_config_local_suffix|/get_config_local_suffix>
+for details on how this is configured.
 
 =head1 METHODS
 
@@ -194,7 +196,8 @@ sub get_config_path {
 =head2 get_config_local_suffix
 
 Determines the suffix of files used to override the main config. By default
-this value is C<local>, but it can be specified in the following order of preference:
+this value is C<local>, which will load C<myapp_local.conf>.  The suffix can
+be specified in the following order of preference:
 
 =over 4
 
@@ -205,6 +208,13 @@ this value is C<local>, but it can be specified in the following order of prefer
 =item * C<$c-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E<gt>{ config_local_suffix }>
 
 =back
+
+The first one of these values found replaces the default of C<local> in the
+name of the local config file to be loaded.
+
+For example, if C< $ENV{ MYAPP_CONFIG_LOCAL_SUFFIX }> is set to C<testing>,
+ConfigLoader will try and load C<myapp_testing.conf> instead of
+C<myapp_local.conf>.
 
 =cut
 
