@@ -16,4 +16,6 @@ requires 'MRO::Compat'       => '0.09';
 
 test_requires 'Test::More';
 
+resources repository => 'http://dev.catalyst.perl.org/repos/Catalyst/trunk/Catalyst-Plugin-ConfigLoader/';
+
 WriteAll;
