@@ -1,6 +1,7 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
 0.24  XXX
+    - Add an __ENV(foo)__ macro + tests (Stuart Watt)
     - Document CATALYST_CONFIG_LOCAL_SUFFIX and MYAPP_LOCAL_CONFIG_SUFFIX
       much better (Louis Erickson)
     - Fix so that having CATALYST_CONFIG_LOCAL_SUFFIX set in $ENV{} doesn't

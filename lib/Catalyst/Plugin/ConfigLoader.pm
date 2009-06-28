@@ -280,6 +280,8 @@ default macros:
 
 =item * C<__HOME__> - replaced with C<$c-E<gt>path_to('')>
 
+=item * C<__ENV(foo)__> - replaced with the value of C<$ENV{foo}>
+
 =item * C<__path_to(foo/bar)__> - replaced with C<$c-E<gt>path_to('foo/bar')>
 
 =item * C<__literal(__FOO__)__> - leaves __FOO__ alone (allows you to use
@@ -305,6 +307,17 @@ sub config_substitutions {
     my $subs = $c->config->{ 'Plugin::ConfigLoader' }->{ substitutions }
         || {};
     $subs->{ HOME }    ||= sub { shift->path_to( '' ); };
+    $subs->{ ENV }    ||= 
+        sub { 
+            my ( $c, $v ) = @_; 
+            if (! defined($ENV{$v})) {
+                Catalyst::Exception->throw( message =>
+                    "Missing environment variable: $v" );
+                return "";
+            } else {
+                return $ENV{ $v }; 
+            }
+        };
     $subs->{ path_to } ||= sub { shift->path_to( @_ ); };
     $subs->{ literal } ||= sub { return $_[ 1 ]; };
     my $subsre = join( '|', keys %$subs );
@@ -328,6 +341,8 @@ development of this module:
 =item * Joel Bernstein E<lt>rataxis@cpan.orgE<gt> - Rewrite to use L<Config::Any>
 
 =item * David Kamholz E<lt>dkamholz@cpan.orgE<gt> - L<Data::Visitor> integration
+
+=item * Stuart Watt - Addition of ENV macro.
 
 =back
 
