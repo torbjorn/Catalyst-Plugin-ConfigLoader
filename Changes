@@ -1,5 +1,6 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+0.25  Fri Aug 07 2009
     - Test case for RT #47937 - MYAPP_CONFIG_LOCAL_SUFFIX ignored w/
       Catalyst::Test (Dan Dascalescu) and patch (prestemon)
 
