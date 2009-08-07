@@ -179,7 +179,7 @@ sub get_config_path {
 
     my $appname = ref $c || $c;
     my $prefix  = Catalyst::Utils::appprefix( $appname );
-    my $path    = Catalyst::Utils::env_value( $c, 'CONFIG' )
+    my $path    = Catalyst::Utils::env_value( $appname, 'CONFIG' )
         || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
         || $c->path_to( $prefix );
 
