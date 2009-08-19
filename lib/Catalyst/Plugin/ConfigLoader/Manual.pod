@@ -216,10 +216,10 @@ Each developer, and the web server, would set the environment variable
 to load their proper configuration file.  All of the configurations can
 be stored properly in source control.
 
-If there is no C<myapp.local>, and the individual configuration files contain
-something required to start the application, such as the Model's data source
-definition, the applicaton won't start unless the environment variable
-is set properly.
+If there is no C<myapp_local.ext> (where .ext is a supported extension), and
+the individual configuration files contain something required to start the
+application, such as the Model's data source definition, the applicaton won't
+start unless the environment variable is set properly.
 
 =cut
 
