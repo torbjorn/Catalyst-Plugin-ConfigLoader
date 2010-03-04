@@ -136,7 +136,7 @@ Catalyst::Plugin::ConfigLoader::Manual - Guide to using the ConfigLoader plugin
           <connect_info>password</connect_info>
         </model>
         <component name="View::TT">
-          <INCLUDE_PATH>/var/www/docs/myapp-cms/templates</INCLUDE_PATH>
+          <INCLUDE_PATH>__path_to(root,templates)__</INCLUDE_PATH>
           <ENCODING>UTF-8</ENCODING>
           <TRIM>1</TRIM>
           <PRE_CHOMP>2</PRE_CHOMP>
