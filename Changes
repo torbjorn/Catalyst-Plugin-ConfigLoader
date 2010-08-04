@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+    - bump dep on Config::Any to use the -ForceArray Config::General option
+      (caelum)
+
 0.28  Wed Jun 30 2010
     - Pod Fixes related to config_substitutions() (Oleg Kostyuk)
     - Pod fix for the "Using a local configuration file" section of
