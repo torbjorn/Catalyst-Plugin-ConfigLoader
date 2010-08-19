@@ -1,5 +1,7 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+    - Fix issue with 2 character app names that are kept in versioned
+      directories (e.g. app called QX in QX-2.1.5/)
     - bump dep on Config::Any to use the -ForceArray Config::General option
       (caelum)
 
