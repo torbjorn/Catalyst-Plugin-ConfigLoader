@@ -1,0 +1,10 @@
+META.yml
+MYMETA.json
+MYMETA.yml
+Makefile
+README
+inc/
+MANIFEST
+MANIFEST.bak
+Catalyst-Plugin-ConfigLoader-*
+*.swp
