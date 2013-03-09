@@ -1,5 +1,7 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+   - Fix repository location in metadata.
+
 0.30  Fri Aug 20 2010
     - Fix for Windows regarding changes from 0.29
 
