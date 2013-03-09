@@ -4,6 +4,9 @@
 ,v$
 \B\.svn\b
 
+\bMYMETA.yml
+\bMYMETA.json
+
 # Avoid Makemaker generated and utility files.
 \bMakefile$
 \bblib
