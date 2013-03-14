@@ -1,5 +1,7 @@
 Revision history for Perl extension Catalyst::Plugin::ConfigLoader.
 
+   - Don't ship .git inside the tarball, whoops.
+
 0.31  Sat Mar 09 2013
    - Fix repository location in metadata.
 

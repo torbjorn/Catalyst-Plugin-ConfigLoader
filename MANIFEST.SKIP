@@ -2,7 +2,7 @@
 \bRCS\b
 \bCVS\b
 ,v$
-\B\.svn\b
+\B\.git\b
 
 \bMYMETA.yml
 \bMYMETA.json
