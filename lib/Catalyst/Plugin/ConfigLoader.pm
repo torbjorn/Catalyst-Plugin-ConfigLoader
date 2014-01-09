@@ -183,7 +183,8 @@ sub get_config_path {
         || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
         || $c->path_to( $prefix );
 
-    my ( $extension ) = ( $path =~ m{\.([^\/\\.]{1,4})$} );
+    ## don't look for extension if this is a dir
+    my ( $extension ) = !-d $path ? ( $path =~ m{\.([^\/\\.]{1,4})$} ) : () ;
 
     if ( -d $path ) {
         $path =~ s{[\/\\]$}{};
