@@ -16,9 +16,9 @@ BEGIN {
     eval { require Catalyst; Catalyst->VERSION( '5.80001' ); };
 
     plan skip_all => 'Catalyst 5.80001 required' if $@;
-    # plan tests => 3;
+    plan tests => 22;
 
-    require_ok 'Catalyst::Test';
+    use Catalyst::Test ();
 
 }
 
@@ -115,5 +115,3 @@ BEGIN {
     is( get( '/appconfig/test4_conf4' ), "", "custom config var4 not set" );
 
 }
-
-done_testing;
