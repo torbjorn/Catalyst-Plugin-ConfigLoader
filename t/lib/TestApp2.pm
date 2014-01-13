@@ -9,7 +9,7 @@ use Catalyst qw/ConfigLoader/;
 
 __PACKAGE__->config( "Plugin::ConfigLoader",
                      {
-                         file => __PACKAGE__->path_to( "customconfig.conf" )
+                         file => __PACKAGE__->path_to( "customconfig.pl" )
                      }
                  );
 
