@@ -8,6 +8,9 @@ use MRO::Compat;
 use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
+use lib '../Config-Loader/lib';
+use Config::Loader;
+
 our $VERSION = '0.32';
 
 =head1 NAME
