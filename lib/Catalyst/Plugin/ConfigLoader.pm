@@ -9,7 +9,7 @@ use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
 use lib '../Config-Loader/lib';
-use Config::Loader;
+use Config::Loader qw(Files);
 
 our $VERSION = '0.32';
 
@@ -73,21 +73,11 @@ loaded, set the C<config()> section.
 sub setup {
     my $c     = shift;
     my @files = $c->find_files;
-    my $cfg   = Config::Any->load_files(
-        {   files       => \@files,
-            filter      => \&_fix_syntax,
-            use_ext     => 1,
-            driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
-                || {},
-        }
-    );
-    # map the array of hashrefs to a simple hash
-    my %configs = map { %$_ } @$cfg;
 
-    # split the responses into normal and local cfg
     my $local_suffix = $c->get_config_local_suffix;
+
     my ( @main, @locals );
-    for ( sort keys %configs ) {
+    for ( @files ) {
         if ( m{$local_suffix\.}ms ) {
             push @locals, $_;
         }
@@ -96,32 +86,25 @@ sub setup {
         }
     }
 
-    # load all the normal cfgs, then the local cfgs last so they can override
-    # normal cfgs
-    $c->load_config( { $_ => $configs{ $_ } } ) for @main, @locals;
+    my $cfg   = get_config(
+        {   files       => [@main,@locals],
+            load_args   => {
+                filter      => \&_fix_syntax,
+                use_ext     => 1,
+                driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
+            },
+        }) || {};
+
+    $c->config( $cfg );
+
+    if ( $c->debug ) {
+        for (grep -r @main,@locals) {
+            $c->log->debug( qq(Loaded Config "$_") )
+        }
+    }
 
     $c->finalize_config;
     $c->next::method( @_ );
-}
-
-=head2 load_config
-
-This method handles loading the configuration data into the Catalyst
-context object. It does not return a value.
-
-=cut
-
-sub load_config {
-    my $c   = shift;
-    my $ref = shift;
-
-    my ( $file, $config ) = %$ref;
-
-    $c->config( $config );
-    $c->log->debug( qq(Loaded Config "$file") )
-        if $c->debug;
-
-    return;
 }
 
 =head2 find_files
@@ -235,6 +218,7 @@ sub get_config_local_suffix {
 
 sub _fix_syntax {
     my $config     = shift;
+
     my @components = (
         map +{
             prefix => $_ eq 'Component' ? '' : $_ . '::',
