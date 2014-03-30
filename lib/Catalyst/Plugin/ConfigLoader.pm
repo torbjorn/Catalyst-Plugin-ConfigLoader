@@ -9,7 +9,8 @@ use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
 use lib '../Config-Loader/lib';
-use Config::Loader qw(Files);
+
+use Config::Loader '+Catalyst::Plugin::ConfigLoader::CLSource';
 
 our $VERSION = '0.32';
 
