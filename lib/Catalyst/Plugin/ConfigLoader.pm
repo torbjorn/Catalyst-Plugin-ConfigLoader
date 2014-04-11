@@ -8,8 +8,6 @@ use MRO::Compat;
 use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
-use lib '../Config-Loader/lib';
-
 use Config::Loader '+Catalyst::Plugin::ConfigLoader::CLSource';
 
 our $VERSION = '0.32';
@@ -73,33 +71,31 @@ loaded, set the C<config()> section.
 
 sub setup {
     my $c     = shift;
-    my @files = $c->find_files;
 
-    my $local_suffix = $c->get_config_local_suffix;
+    my $appname = ref $c || $c;
+    my $prefix  = Catalyst::Utils::appprefix( $appname );
+    my $path    = $c->config->{ 'Plugin::ConfigLoader' }->{ file }
+        || $c->path_to( $prefix );
 
-    my ( @main, @locals );
-    for ( @files ) {
-        if ( m{$local_suffix\.}ms ) {
-            push @locals, $_;
-        }
-        else {
-            push @main, $_;
-        }
+    if ( -d $path ) {
+        $path .= "/$prefix";
     }
 
     my $cfg   = get_config(
-        {   files       => [@main,@locals],
+        {
+            name => $appname,
+            file => $path,
             load_args   => {
                 filter      => \&_fix_syntax,
                 use_ext     => 1,
                 driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
             },
-        }) || {};
+        });
 
     $c->config( $cfg );
 
     if ( $c->debug ) {
-        for (grep -r @main,@locals) {
+        for (grep -r, () ) {
             $c->log->debug( qq(Loaded Config "$_") )
         }
     }
@@ -116,24 +112,24 @@ L<Config::Any|Config::Any> for loading.
 
 =cut
 
-sub find_files {
-    my $c = shift;
-    my ( $path, $extension ) = $c->get_config_path;
-    my $suffix     = $c->get_config_local_suffix;
-    my @extensions = @{ Config::Any->extensions };
+# sub find_files {
+#     my $c = shift;
+#     my ( $path, $extension ) = $c->get_config_path;
+#     my $suffix     = $c->get_config_local_suffix;
+#     my @extensions = @{ Config::Any->extensions };
 
-    my @files;
-    if ( $extension ) {
-        die "Unable to handle files with the extension '${extension}'"
-            unless grep { $_ eq $extension } @extensions;
-        ( my $local = $path ) =~ s{\.$extension}{_$suffix.$extension};
-        push @files, $path, $local;
-    }
-    else {
-        @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
-    }
-    @files;
-}
+#     my @files;
+#     if ( $extension ) {
+#         die "Unable to handle files with the extension '${extension}'"
+#             unless grep { $_ eq $extension } @extensions;
+#         ( my $local = $path ) =~ s{\.$extension}{_$suffix.$extension};
+#         push @files, $path, $local;
+#     }
+#     else {
+#         @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
+#     }
+#     @files;
+# }
 
 =head2 get_config_path
 
@@ -160,26 +156,25 @@ application prefix will be added on to the end of the path.
 
 =cut
 
-sub get_config_path {
-    my $c = shift;
+# sub get_config_path {
+#     my $c = shift;
 
+#     my $appname = ref $c || $c;
+#     my $prefix  = Catalyst::Utils::appprefix( $appname );
+#     my $path    = Catalyst::Utils::env_value( $appname, 'CONFIG' )
+#         || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
+#         || $c->path_to( $prefix );
 
-    my $appname = ref $c || $c;
-    my $prefix  = Catalyst::Utils::appprefix( $appname );
-    my $path    = Catalyst::Utils::env_value( $appname, 'CONFIG' )
-        || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
-        || $c->path_to( $prefix );
+#     ## don't look for extension if this is a dir
+#     my ( $extension ) = !-d $path ? ( $path =~ m{\.([^\/\\.]{1,4})$} ) : () ;
 
-    ## don't look for extension if this is a dir
-    my ( $extension ) = !-d $path ? ( $path =~ m{\.([^\/\\.]{1,4})$} ) : () ;
+#     if ( -d $path ) {
+#         $path =~ s{[\/\\]$}{};
+#         $path .= "/$prefix";
+#     }
 
-    if ( -d $path ) {
-        $path =~ s{[\/\\]$}{};
-        $path .= "/$prefix";
-    }
-
-    return ( $path, $extension );
-}
+#     return ( $path, $extension );
+# }
 
 =head2 get_config_local_suffix
 
@@ -206,20 +201,19 @@ C<myapp_local.conf>.
 
 =cut
 
-sub get_config_local_suffix {
-    my $c = shift;
+# sub get_config_local_suffix {
+#     my $c = shift;
 
-    my $appname = ref $c || $c;
-    my $suffix = Catalyst::Utils::env_value( $appname, 'CONFIG_LOCAL_SUFFIX' )
-        || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
-        || 'local';
+#     my $appname = ref $c || $c;
+#     my $suffix = Catalyst::Utils::env_value( $appname, 'CONFIG_LOCAL_SUFFIX' )
+#         || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
+#         || 'local';
 
-    return $suffix;
-}
+#     return $suffix;
+# }
 
 sub _fix_syntax {
     my $config     = shift;
-
     my @components = (
         map +{
             prefix => $_ eq 'Component' ? '' : $_ . '::',
