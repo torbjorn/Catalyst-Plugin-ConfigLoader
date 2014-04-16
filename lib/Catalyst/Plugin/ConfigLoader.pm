@@ -84,11 +84,13 @@ sub setup {
     my $cfg   = get_config(
         {
             name => $appname,
-            file => $path,
-            load_args   => {
-                filter      => \&_fix_syntax,
-                use_ext     => 1,
-                driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
+            File => {
+                file => $path,
+                load_args   => {
+                    filter      => \&_fix_syntax,
+                    use_ext     => 1,
+                    driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
+                }
             },
         });
 
@@ -201,16 +203,16 @@ C<myapp_local.conf>.
 
 =cut
 
-# sub get_config_local_suffix {
-#     my $c = shift;
+sub get_config_local_suffix {
+    my $c = shift;
 
-#     my $appname = ref $c || $c;
-#     my $suffix = Catalyst::Utils::env_value( $appname, 'CONFIG_LOCAL_SUFFIX' )
-#         || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
-#         || 'local';
+    my $appname = ref $c || $c;
+    my $suffix = Catalyst::Utils::env_value( $appname, 'CONFIG_LOCAL_SUFFIX' )
+        || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
+        || 'local';
 
-#     return $suffix;
-# }
+    return $suffix;
+}
 
 sub _fix_syntax {
     my $config     = shift;
