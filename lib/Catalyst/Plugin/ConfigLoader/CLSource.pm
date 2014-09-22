@@ -133,5 +133,19 @@ sub _local_suffixed_filepath {
 #     return $suffix;
 # }
 
-
 1;
+
+=encoding utf8
+
+=head1 NAME
+
+Catalyst::Plugin::ConfigLoader::CLSource - Middleware between CPCL and Config::Loader
+
+=head1 SYNOPSIS
+
+This module is not intended to use directly
+
+=head1 DESCRIPTION
+
+This handles all there is to handle to make CPCL use the available
+features of Config::Loader.
