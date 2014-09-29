@@ -8,7 +8,8 @@ use MRO::Compat;
 use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
-use Config::Loader '+Catalyst::Plugin::ConfigLoader::CLSource';
+# use Config::Loader '+Catalyst::Plugin::ConfigLoader::CLSource';
+use Config::Loader;
 
 our $VERSION = '0.32';
 
@@ -73,31 +74,35 @@ sub setup {
     my $c     = shift;
 
     my $appname = ref $c || $c;
+
+    my $env_source = Config::Loader->new_source( 'FileFromEnv', name => $appname );
+
     my $prefix  = Catalyst::Utils::appprefix( $appname );
     my $path    = $c->config->{ 'Plugin::ConfigLoader' }->{ file }
-        || $c->path_to( $prefix );
+        || $c->path_to( $prefix ) || $env_source->path;
 
     if ( -d $path ) {
         $path .= "/$prefix";
     }
 
-    my $cfg   = get_config(
-        {
-            name => $appname,
-            File => {
-                file => $path,
-                load_args   => {
-                    filter      => \&_fix_syntax,
-                    use_ext     => 1,
-                    driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
-                }
-            },
-        });
+    my $cl = Config::Loader->new_source(
 
-    $c->config( $cfg );
+        FileWithLocal => {
+            file => $path,
+            defined $env_source->suffix ? (local_suffix => $env_source->suffix) : (),
+            load_args   => {
+                filter      => \&_fix_syntax,
+                use_ext     => 1,
+                driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
+            }
+        },
+
+    );
+
+    $c->config( $cl->load_config );
 
     if ( $c->debug ) {
-        for (grep -r, () ) {
+        for (grep -r, ($cl->loaded_files) ) {
             $c->log->debug( qq(Loaded Config "$_") )
         }
     }
