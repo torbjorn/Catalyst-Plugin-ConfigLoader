@@ -8,10 +8,104 @@ use MRO::Compat;
 use Data::Visitor::Callback;
 use Catalyst::Utils ();
 
-# use Config::Loader '+Catalyst::Plugin::ConfigLoader::CLSource';
-use Config::Loader;
+use Config::Loader ();
 
 our $VERSION = '0.32';
+
+sub setup {
+    my $c = shift;
+
+    my $appname = ref $c || $c;
+
+    my $env_source = Config::Loader->new_source( 'FileFromEnv', name => $appname );
+
+    my $prefix  = Catalyst::Utils::appprefix( $appname );
+    my $path    = $c->config->{ 'Plugin::ConfigLoader' }->{ file }
+        || $c->path_to( $prefix ) || $env_source->path;
+
+    if ( -d $path ) {
+        $path .= "/$prefix";
+    }
+
+    my $cl = Config::Loader->new_source(
+
+        FileWithLocal => {
+            file => $path,
+            defined $env_source->suffix ? (local_suffix => $env_source->suffix) : (),
+            load_args   => {
+                filter      => \&_fix_syntax,
+                use_ext     => 1,
+                driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
+            }
+        },
+
+    );
+    my $s = Config::Loader->new_source(
+        'Filter::Substitution',
+        source => $cl,
+        substitutions => {
+
+            ## defaults:
+            HOME => sub { $c->path_to( '' ); },
+            ENV =>  sub {
+                shift;
+                my ($v) = @_;
+                if ( !defined $v) {
+                    return '';
+                }
+                if (! defined($ENV{$v})) {
+                    Catalyst::Exception->throw( message => "Missing environment variable: $v" );
+                    return '';
+                } else {
+                    return $ENV{ $v };
+                }
+            },
+            path_to => sub { shift; $c->path_to( @_ ); },
+            literal => sub { return $_[ 1 ]; },
+
+            ## configured:
+            %{ $c->config->{ 'Plugin::ConfigLoader' }->{ substitutions } || {} },
+
+        }
+    );
+
+    $c->config( $s->load_config );
+
+    if ( $c->debug ) {
+        for (grep -r, ($cl->loaded_files) ) {
+            $c->log->debug( qq(Loaded Config "$_") )
+        }
+    }
+
+    $c->finalize_config;
+    $c->next::method( @_ );
+
+}
+
+sub _fix_syntax {
+    my $config     = shift;
+    my @components = (
+        map +{
+            prefix => $_ eq 'Component' ? '' : $_ . '::',
+            values => delete $config->{ lc $_ } || delete $config->{ $_ }
+        },
+        grep { ref $config->{ lc $_ } || ref $config->{ $_ } }
+            qw( Component Model M View V Controller C Plugin )
+    );
+
+    foreach my $comp ( @components ) {
+        my $prefix = $comp->{ prefix };
+        foreach my $element ( keys %{ $comp->{ values } } ) {
+            $config->{ "$prefix$element" } = $comp->{ values }->{ $element };
+        }
+    }
+}
+
+sub finalize_config {}
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -68,75 +162,11 @@ This method is automatically called by Catalyst's setup routine. It will
 attempt to use each plugin and, once a file has been successfully
 loaded, set the C<config()> section.
 
-=cut
-
-sub setup {
-    my $c     = shift;
-
-    my $appname = ref $c || $c;
-
-    my $env_source = Config::Loader->new_source( 'FileFromEnv', name => $appname );
-
-    my $prefix  = Catalyst::Utils::appprefix( $appname );
-    my $path    = $c->config->{ 'Plugin::ConfigLoader' }->{ file }
-        || $c->path_to( $prefix ) || $env_source->path;
-
-    if ( -d $path ) {
-        $path .= "/$prefix";
-    }
-
-    my $cl = Config::Loader->new_source(
-
-        FileWithLocal => {
-            file => $path,
-            defined $env_source->suffix ? (local_suffix => $env_source->suffix) : (),
-            load_args   => {
-                filter      => \&_fix_syntax,
-                use_ext     => 1,
-                driver_args => $c->config->{ 'Plugin::ConfigLoader' }->{ driver }
-            }
-        },
-
-    );
-
-    $c->config( $cl->load_config );
-
-    if ( $c->debug ) {
-        for (grep -r, ($cl->loaded_files) ) {
-            $c->log->debug( qq(Loaded Config "$_") )
-        }
-    }
-
-    $c->finalize_config;
-    $c->next::method( @_ );
-}
-
 =head2 find_files
 
 This method determines the potential file paths to be used for config loading.
 It returns an array of paths (up to the filename less the extension) to pass to
 L<Config::Any|Config::Any> for loading.
-
-=cut
-
-# sub find_files {
-#     my $c = shift;
-#     my ( $path, $extension ) = $c->get_config_path;
-#     my $suffix     = $c->get_config_local_suffix;
-#     my @extensions = @{ Config::Any->extensions };
-
-#     my @files;
-#     if ( $extension ) {
-#         die "Unable to handle files with the extension '${extension}'"
-#             unless grep { $_ eq $extension } @extensions;
-#         ( my $local = $path ) =~ s{\.$extension}{_$suffix.$extension};
-#         push @files, $path, $local;
-#     }
-#     else {
-#         @files = map { ( "$path.$_", "${path}_${suffix}.$_" ) } @extensions;
-#     }
-#     @files;
-# }
 
 =head2 get_config_path
 
@@ -161,83 +191,6 @@ The order of preference is specified as:
 If either of the first two user-specified options are directories, the
 application prefix will be added on to the end of the path.
 
-=cut
-
-# sub get_config_path {
-#     my $c = shift;
-
-#     my $appname = ref $c || $c;
-#     my $prefix  = Catalyst::Utils::appprefix( $appname );
-#     my $path    = Catalyst::Utils::env_value( $appname, 'CONFIG' )
-#         || $c->config->{ 'Plugin::ConfigLoader' }->{ file }
-#         || $c->path_to( $prefix );
-
-#     ## don't look for extension if this is a dir
-#     my ( $extension ) = !-d $path ? ( $path =~ m{\.([^\/\\.]{1,4})$} ) : () ;
-
-#     if ( -d $path ) {
-#         $path =~ s{[\/\\]$}{};
-#         $path .= "/$prefix";
-#     }
-
-#     return ( $path, $extension );
-# }
-
-=head2 get_config_local_suffix
-
-Determines the suffix of files used to override the main config. By default
-this value is C<local>, which will load C<myapp_local.conf>.  The suffix can
-be specified in the following order of preference:
-
-=over 4
-
-=item * C<$ENV{ MYAPP_CONFIG_LOCAL_SUFFIX }>
-
-=item * C<$ENV{ CATALYST_CONFIG_LOCAL_SUFFIX }>
-
-=item * C<$c-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E<gt>{ config_local_suffix }>
-
-=back
-
-The first one of these values found replaces the default of C<local> in the
-name of the local config file to be loaded.
-
-For example, if C< $ENV{ MYAPP_CONFIG_LOCAL_SUFFIX }> is set to C<testing>,
-ConfigLoader will try and load C<myapp_testing.conf> instead of
-C<myapp_local.conf>.
-
-=cut
-
-sub get_config_local_suffix {
-    my $c = shift;
-
-    my $appname = ref $c || $c;
-    my $suffix = Catalyst::Utils::env_value( $appname, 'CONFIG_LOCAL_SUFFIX' )
-        || $c->config->{ 'Plugin::ConfigLoader' }->{ config_local_suffix }
-        || 'local';
-
-    return $suffix;
-}
-
-sub _fix_syntax {
-    my $config     = shift;
-    my @components = (
-        map +{
-            prefix => $_ eq 'Component' ? '' : $_ . '::',
-            values => delete $config->{ lc $_ } || delete $config->{ $_ }
-        },
-        grep { ref $config->{ lc $_ } || ref $config->{ $_ } }
-            qw( Component Model M View V Controller C Plugin )
-    );
-
-    foreach my $comp ( @components ) {
-        my $prefix = $comp->{ prefix };
-        foreach my $element ( keys %{ $comp->{ values } } ) {
-            $config->{ "$prefix$element" } = $comp->{ values }->{ $element };
-        }
-    }
-}
-
 =head2 finalize_config
 
 This method is called after the config file is loaded. It can be
@@ -247,19 +200,6 @@ plugins, it's important to load ConfigLoader before them.
 ConfigLoader provides a default finalize_config method which
 walks through the loaded config hash and calls the C<config_substitutions>
 sub on any string.
-
-=cut
-
-sub finalize_config {
-    my $c = shift;
-    my $v = Data::Visitor::Callback->new(
-        plain_value => sub {
-            return unless defined $_;
-            $c->config_substitutions( $_ );
-        }
-    );
-    $v->visit( $c->config );
-}
 
 =head2 config_substitutions( $value )
 
@@ -290,32 +230,28 @@ Example:
 
 The above will respond to C<__baz(x,y)__> in config strings.
 
-=cut
+=head2 get_config_local_suffix
 
-sub config_substitutions {
-    my $c    = shift;
-    my $subs = $c->config->{ 'Plugin::ConfigLoader' }->{ substitutions }
-        || {};
-    $subs->{ HOME }    ||= sub { shift->path_to( '' ); };
-    $subs->{ ENV }    ||=
-        sub {
-            my ( $c, $v ) = @_;
-            if (! defined($ENV{$v})) {
-                Catalyst::Exception->throw( message =>
-                    "Missing environment variable: $v" );
-                return "";
-            } else {
-                return $ENV{ $v };
-            }
-        };
-    $subs->{ path_to } ||= sub { shift->path_to( @_ ); };
-    $subs->{ literal } ||= sub { return $_[ 1 ]; };
-    my $subsre = join( '|', keys %$subs );
+Determines the suffix of files used to override the main config. By default
+this value is C<local>, which will load C<myapp_local.conf>.  The suffix can
+be specified in the following order of preference:
 
-    for ( @_ ) {
-        s{__($subsre)(?:\((.+?)\))?__}{ $subs->{ $1 }->( $c, $2 ? split( /,/, $2 ) : () ) }eg;
-    }
-}
+=over 4
+
+=item * C<$ENV{ MYAPP_CONFIG_LOCAL_SUFFIX }>
+
+=item * C<$ENV{ CATALYST_CONFIG_LOCAL_SUFFIX }>
+
+=item * C<$c-E<gt>config-E<gt>{ 'Plugin::ConfigLoader' }-E<gt>{ config_local_suffix }>
+
+=back
+
+The first one of these values found replaces the default of C<local> in the
+name of the local config file to be loaded.
+
+For example, if C< $ENV{ MYAPP_CONFIG_LOCAL_SUFFIX }> is set to C<testing>,
+ConfigLoader will try and load C<myapp_testing.conf> instead of
+C<myapp_local.conf>.
 
 =head1 AUTHOR
 
@@ -362,7 +298,3 @@ it under the same terms as Perl itself.
 =item * L<Config::Any>
 
 =back
-
-=cut
-
-1;
