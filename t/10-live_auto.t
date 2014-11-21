@@ -4,11 +4,14 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 
-use Test::More tests => 5;
+use Test::More tests => 6;
+
+BEGIN{ $ENV{TESTVAR} = "test_value" };
 
 use Catalyst::Test 'TestApp';
 
 {
+
     my $response;
     ok( $response = request( 'http://localhost/config/' ), 'request ok' );
     is( $response->content, 'foo', 'config ok' );
@@ -27,4 +30,8 @@ use Catalyst::Test 'TestApp';
         $home, TestApp->path_to( 'x' ),
         $home, TestApp->path_to( 'y' ) );
     is( $response->content, $path, 'vars substituted in config var, twice' );
+
+    is get( 'http://localhost/appconfig/fromenv' ) => 'test_value',
+        '__ENV__ substitution';
+
 }
