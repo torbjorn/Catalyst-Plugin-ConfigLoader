@@ -18,9 +18,11 @@ sub setup {
 
     my $appname = ref $c || $c;
 
+    my $prefix  = Catalyst::Utils::appprefix( $appname );
+
     my $env_info = Config::Loader->new_source
         ( 'ENV',
-          env_prefix => $appname,
+          env_prefix => $prefix,
           env_search => [qw/config config_local_suffix/]
       )->load_config;
     my ($env_path,$env_suffix) = @{$env_info}{
@@ -28,8 +30,6 @@ sub setup {
             "${appname}_config",
             "${appname_config_local_suffix}"
         )};
-
-    my $prefix  = Catalyst::Utils::appprefix( $appname );
 
     my $path    = $c->config->{ 'Plugin::ConfigLoader' }->{ file }
         || $c->path_to( $prefix ) || $env_path
