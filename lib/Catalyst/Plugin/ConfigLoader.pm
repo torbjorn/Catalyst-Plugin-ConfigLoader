@@ -13,15 +13,26 @@ use Config::Loader ();
 our $VERSION = '0.32';
 
 sub setup {
+
     my $c = shift;
 
     my $appname = ref $c || $c;
 
-    my $env_source = Config::Loader->new_source( 'FileFromEnv', name => $appname );
+    my $env_info = Config::Loader->new_source
+        ( 'ENV',
+          env_prefix => $appname,
+          env_search => [qw/config config_local_suffix/]
+      )->load_config;
+    my ($env_path,$env_suffix) = @{$env_info}{
+        (
+            "${appname}_config",
+            "${appname_config_local_suffix}"
+        )};
 
     my $prefix  = Catalyst::Utils::appprefix( $appname );
+
     my $path    = $c->config->{ 'Plugin::ConfigLoader' }->{ file }
-        || $c->path_to( $prefix ) || $env_source->path;
+        || $c->path_to( $prefix ) || $env_path
 
     if ( -d $path ) {
         $path .= "/$prefix";
@@ -31,7 +42,7 @@ sub setup {
 
         FileWithLocal => {
             file => $path,
-            defined $env_source->suffix ? (local_suffix => $env_source->suffix) : (),
+            defined $env_suffix ? (local_suffix => $env_suffix) : (),
             load_args   => {
                 filter      => \&_fix_syntax,
                 use_ext     => 1,
